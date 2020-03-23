@@ -11,14 +11,17 @@ int Intersect::read_line(std::string& s)
 		while (iss >> input[i]) {
 			i++;
 		}
+		if (i != 3)throw format_error();
 		add_object(type, input[0], input[1], input[2]);
 	}
 	else if (type == 'L' || type == 'R' || type == 'S') {
 		while (iss >> input[i]) {
 			i++;
 		}
+		if (i != 4)throw format_error();
 		add_object(type, input[0], input[1], input[2], input[3]);
 	}
+	else throw format_error();
 	return 0;
 }
 
@@ -31,12 +34,34 @@ void Intersect::read_from_file(const char* file_in, const char* file_out)
 	fout.open(file_out);
 	int n;
 	std::string s;
-		if (!(fin >> n));
+	try
+	{
+		if (!(fin >> n)) throw format_error();
 		getline(fin, s);
 		for (int i = 0; i < n; i++) {
 			getline(fin, s);
 			read_line(s);
 		}
+	}
+	catch (const same_point_error s_error)
+	{
+		fout << s_error.error_mesg();
+		exit(0);
+	}
+	catch (const Inf_intersection_error i_error)
+	{
+		fout << i_error.error_mesg();
+		exit(0);
+	}
+	catch (const out_index_error o_error)
+	{
+		fout << o_error.error_mesg();
+		exit(0);
+	}
+	catch (const format_error f_error) {
+		fout << f_error.error_mesg();
+		exit(0);
+	}
 	fout << point_set.size();
 	fin.close();
 	fout.close();
@@ -47,10 +72,31 @@ void Intersect::read_from_console()
 	int n;
 	std::string s;
 	std::cin >> n;
-	getline(std::cin, s);
+	getline(std::cin,s);
 	for (int i = 0; i < n; i++) {
+		try
+		{
 			getline(std::cin, s);
 			read_line(s);
+		}
+		catch (const same_point_error s_error)
+		{
+			std::cout << s_error.error_mesg() << std::endl;
+			i--;
+			continue;
+		}
+		catch (const Inf_intersection_error i_error)
+		{
+			std::cout << i_error.error_mesg() << std::endl;
+			i--;
+			continue;
+		}
+		catch (const out_index_error o_error)
+		{
+			std::cout << o_error.error_mesg() << std::endl;
+			i--;
+			continue;
+		}
 	}
 	std::cout << point_set.size();
 }
@@ -59,6 +105,7 @@ void Intersect::add_object(char type, double x1, double y1, double x2, double y2
 {
 	Point p1(x1, y1);
 	Point p2(x2, y2);
+	if (p1 == p2)throw(same_point_error());
 	Line* l;
 
 	if (type == 'L') {
@@ -92,6 +139,7 @@ void Intersect::delete_object(char type, double x1, double y1, double x2, double
 		Line* l = *line_it;
 		Point start_p(x1, y1);
 		Point end_p(x2, y2);
+		if (start_p == end_p)throw(same_point_error());
 		if (l->get_type() == type && l->get_start_point() == start_p && l->get_end_point() == end_p) {
 			line_list.erase(line_it);
 			find_delete(l, line_list, point_set);
@@ -99,6 +147,7 @@ void Intersect::delete_object(char type, double x1, double y1, double x2, double
 			return;
 		}
 	}
+	throw(no_delete_object_error());
 }
 
 
@@ -116,6 +165,7 @@ void Intersect::delete_object(char type, double x1, double y1, double r)
 			return;
 		}
 	}
+	throw(no_delete_object_error());
 }
 
 std::vector<std::pair<double, double>> Intersect::get_point_gui() const

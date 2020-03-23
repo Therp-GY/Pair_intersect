@@ -4,6 +4,7 @@
 double eps = 0.00000001;
 
 Point::Point(double x, double y) {
+	if (abs(x) >= 100000 || abs(y) >= 100000)throw out_index_error();
 	x_ = x;
 	y_ = y;
 }
@@ -77,6 +78,7 @@ void operator<<(std::ostream& os, Point& point)
 
 Line::Line(const Point& p1, const Point& p2)
 {
+	if (p1 == p2)throw same_point_error();
 	type = 'L';
 	start_point = p1;
 	end_point = p2;
@@ -104,7 +106,7 @@ Line::Line(const double& a_, const double& b_, const Point& point)
 int Line::find_intersection(const Line& line, Point* p)const
 {
 	if (coincide(line)) {
-		return 0;
+		throw(Inf_intersection_error(*this, line));
 	}
 	else {
 		if (b * line.a - a * line.b == 0) {
@@ -216,6 +218,7 @@ bool equal(const double &a, const double &b) {
 
 Circle::Circle(const Point& point, const double r_)
 {
+	if (r_ >= 100000 || r_ <= 0)throw out_index_error();
 	o = point;
 	r = r_;
 }
@@ -266,7 +269,7 @@ int Circle::find_intersection(const Line& line, Point* p)const
 int Circle::find_intersection(const Circle& circle, Point* p)const
 {
 	if (o == circle.o && abs(r - circle.r) < eps) {
-		return 0;
+		throw(Inf_intersection_error(*this, circle));
 	}
 
 	//	交点个数
@@ -373,4 +376,29 @@ const std::string Seg::info() const
 	return a;
 }
 
+//////////	Inf_error
 
+const std::string Inf_intersection_error::error_mesg()const
+{
+	return object1 + " 和 " + object2 + " 无限交点";
+}
+
+const std::string same_point_error::error_mesg() const
+{
+	return "两点重合,请重新输入";
+}
+
+const std::string no_delete_object_error::error_mesg() const
+{
+	return "没有可以删除的几何对象";
+}
+
+const std::string out_index_error::error_mesg() const
+{
+	return "坐标范围超限";
+}
+
+const std::string format_error::error_mesg() const
+{
+	return "输入格式错误";
+}

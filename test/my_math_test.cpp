@@ -660,6 +660,214 @@ namespace mymathtest
 			Assert::AreEqual(true, l1.coincide(l2));
 		}
 
+		//	test out_index_error
+		TEST_METHOD(TestMethod43)
+		{
+			int a = 0;
+			try
+			{
+				Point a1(-100001, 0);
+			}
+			catch (const out_index_error o)
+			{
+				a = 1;
+			}
+			Assert::AreEqual(1, a);
 
+			a = 0;
+			try
+			{
+				Line l1(Point(-1, 200000), Point(-2, -3));
+			}
+			catch (const out_index_error o)
+			{
+				a = 1;
+			}
+			Assert::AreEqual(1, a);
+
+
+			a = 0;
+			try
+			{
+				Circle r1(Point(-1, 200), 100002);
+			}
+			catch (const out_index_error o)
+			{
+				a = 1;
+			}
+			Assert::AreEqual(1, a);
+
+
+			a = 0;
+			try
+			{
+				Circle r1(Point(-1, 200), -1);
+			}
+			catch (const out_index_error o)
+			{
+				a = 1;
+			}
+			Assert::AreEqual(1, a);
+		}
+
+		//	test same_point_error
+		TEST_METHOD(TestMethod44)
+		{
+			int a = 0;
+			try
+			{
+				Point a1(-1000, 0);
+				Point b1(-1000, 0);
+				Seg l1(a1, b1);
+			}
+			catch (const same_point_error s)
+			{
+				a = 1;
+			}
+			Assert::AreEqual(1, a);
+		}
+
+		//	test Inf_intersection_error
+		TEST_METHOD(TestMethod45)
+		{
+			Point p[2];
+			int a = 0;
+			try
+			{
+				Point a1(0, 0);
+				Point b1(2, 2);
+				Seg l1(a1, b1);
+
+				Point a2(1, 1);
+				Point b2(3, 3);
+				Ray l2(a2, b2);
+				l1.find_intersection(l2,p);
+			}
+			catch (const Inf_intersection_error i)
+			{
+				a = 1;
+			}
+			Assert::AreEqual(1, a);
+
+			a = 1;
+			try
+			{
+				Point a1(0, 0);
+				Point b1(1, 1);
+				Seg l1(a1, b1);
+
+				Point a2(1, 1);
+				Point b2(3, 3);
+				Ray l2(a2, b2);
+				l1.find_intersection(l2, p);
+			}
+			catch (const Inf_intersection_error i)
+			{
+				a = 0;
+			}
+			Assert::AreEqual(1, a);
+
+			a = 0;
+			try
+			{
+				Point a1(0, 0);
+				Point b1(1, 1);
+				Seg l1(a1, b1);
+
+				Point a2(0, 0);
+				Point b2(3, 3);
+				Seg l2(a2, b2);
+				l1.find_intersection(l2, p);
+			}
+			catch (const Inf_intersection_error i)
+			{
+				a = 1;
+			}
+			Assert::AreEqual(1, a);
+
+		}
+
+		//	test no_delete_object_error
+		TEST_METHOD(TestMethod46)
+		{
+			Intersect intersect;
+			int a = 0;
+			try
+			{
+				Line l(Point(1, 1), Point(2, 2));
+				intersect.add_object('L',1,1,2,2);
+				intersect.delete_object('L', 1, 1, 2, 3);
+			}
+			catch (const no_delete_object_error n)
+			{
+				a = 1;
+			}
+			Assert::AreEqual(1, a);
+		}
+
+		TEST_METHOD(TestMethod47)
+		{
+			Intersect intersect;
+			int a = 1;
+			try
+			{
+				Line l(Point(1, 1), Point(2, 2));
+				intersect.add_object('C', 1, 1, 2);
+				intersect.delete_object('C', 1, 1, 2);
+			}
+			catch (const no_delete_object_error n)
+			{
+				a = 0;
+			}
+			Assert::AreEqual(1, a);
+		}
+
+		TEST_METHOD(TestMethod48) {
+			Intersect intersect;
+			int a = 0;
+			try
+			{
+				Line l(Point(1, 1), Point(2, 2));
+				intersect.add_object('C', 1, 1, 2);
+				intersect.delete_object('C', 1, 1, 3);
+			}
+			catch (const no_delete_object_error n)
+			{
+				a = 1;
+			}
+			Assert::AreEqual(1, a);
+		}
+
+		TEST_METHOD(TestMethod49) {
+			Intersect intersect;
+			int a = 1;
+			try
+			{
+				Line l(Point(1, 1), Point(2, 2));
+				intersect.add_object('L', 1, 1, 2, 2);
+				intersect.delete_object('L', 1, 1, 2, 2);
+			}
+			catch (const no_delete_object_error n)
+			{
+				a = 0;
+			}
+			Assert::AreEqual(1, a);
+		}
+
+		TEST_METHOD(TestMethod50) {
+			Intersect intersect;
+			int a = 0;
+			try
+			{
+				Line l(Point(1, 1), Point(2, 2));
+				intersect.add_object('L', 1, 1, 2, 2);
+				intersect.delete_object('R', 1, 1, 2, 2);
+			}
+			catch (const no_delete_object_error n)
+			{
+				a = 1;
+			}
+			Assert::AreEqual(1, a);
+		}
 	};
 }

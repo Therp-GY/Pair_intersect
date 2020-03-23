@@ -101,6 +101,42 @@ public:
 };
 
 
+class Inf_intersection_error{
+private:
+	enum errorType
+	{
+		ll = 1,	//	线线无限交点
+		cc = 2	//	圆圆无限交点
+	};
+	std::string object1;
+	std::string object2;
+	int type;
+public:
+	Inf_intersection_error(const Line& l_1, const Line& l_2) { object1 = l_1.info(); object2 = l_2.info(); type = ll; };
+	Inf_intersection_error(const Circle& c_1,const Circle& c_2){ object1 = c_1.info(); object2 = c_2.info(); type = cc; };
+	const std::string error_mesg()const;
+};
+
+class same_point_error {
+public:
+	const std::string error_mesg()const;
+};
+
+class no_delete_object_error {
+public:
+	const std::string error_mesg()const;
+};
+
+class out_index_error {
+public:
+	const std::string error_mesg()const;
+};
+
+class format_error {
+public:
+	const std::string error_mesg()const;
+};
+
 bool equal(const double& a, const double& b);
 
 
